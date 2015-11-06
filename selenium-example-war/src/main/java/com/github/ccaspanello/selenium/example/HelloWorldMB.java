@@ -39,7 +39,7 @@ public class HelloWorldMB implements Serializable
 
   public void sayHello()
   {
-    if (name.equals("")) {
+    if ("".equals(name)) {
       message = DEFAULT_MESSAGE;
     } else {
       message = "Hello, " + name + "!";
@@ -59,11 +59,6 @@ public class HelloWorldMB implements Serializable
   public String getMessage()
   {
     return message;
-  }
-
-  public void setMessage(String message)
-  {
-    this.message = message;
   }
 
 }

@@ -19,6 +19,16 @@
         <glassfish.home>/Applications/NetBeans/glassfish-4.1.1/glassfish</glassfish.home>
         <domain.username>admin</domain.username>
         <domain.password>password</domain.password>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Sonar -->
+        <!-- The destination file for the code coverage report has to be set to the same value
+             in the parent pom and in each module pom. Then JaCoCo will add up information in
+             the same report, so that, it will give the cross-module code coverage. -->
+        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.language>java</sonar.language>
     </properties>
 
     <dependencies>
@@ -55,6 +65,12 @@
             <plugins>
 
                 <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.2.201409121644</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>2.3</version>
@@ -80,6 +96,9 @@
                             <adminPort>1048</adminPort>
                             <httpPort>1080</httpPort>
                             <reuse>false</reuse>
+                            <!--<jvmOptions>-->
+                                <!--<option>-javaagent:${project.basedir}/jacoco/jacocoagent.jar=output=tcpserver,port=6300"</option>-->
+                            <!--</jvmOptions>-->
                         </domain>
                         <components>
                             <component>
@@ -126,6 +145,7 @@
 
             </plugins>
         </pluginManagement>
+
     </build>
 
     <profiles>
@@ -179,6 +199,7 @@
             <id>ci</id>
             <build>
                 <plugins>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
@@ -199,6 +220,39 @@
                                 <goals>
                                     <goal>create-domain</goal>
                                     <goal>deploy</goal>
+                                    <goal>stop-domain</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <append>true</append>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>agent-for-ut</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>agent-for-it</id>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                    <propertyName>failsafeArgLine</propertyName>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>jacoco-site</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report</goal>
                                 </goals>
                             </execution>
                         </executions>

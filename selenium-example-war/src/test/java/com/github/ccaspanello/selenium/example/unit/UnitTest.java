@@ -25,9 +25,21 @@ import org.testng.annotations.Test;
 public class UnitTest
 {
   @Test
+  public void testSayHelloInitial()
+  {
+    HelloWorldMB helloWorldMB = new HelloWorldMB();
+    String expected = "Hello World!";
+    String actual = helloWorldMB.getMessage();
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testSayHelloEmpty()
   {
     HelloWorldMB helloWorldMB = new HelloWorldMB();
+    helloWorldMB.setName("");
+    helloWorldMB.sayHello();
+
     String expected = "Hello World!";
     String actual = helloWorldMB.getMessage();
     assertEquals(expected, actual);

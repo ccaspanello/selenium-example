@@ -27,7 +27,7 @@ import org.testng.annotations.Parameters;
  *
  * @author Chris Caspanello <ccaspanello@gmail.com>
  */
-public class AbstractWebTest
+public abstract class AbstractWebTest
 {
   protected String homeUrl;
   protected WebDriver driver;
