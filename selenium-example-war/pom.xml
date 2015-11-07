@@ -13,21 +13,18 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <!--<glassfish.home>C:/glassfish4/glassfish</glassfish.home>-->
         <glassfish.home>/Applications/NetBeans/glassfish-4.1.1/glassfish</glassfish.home>
         <domain.username>admin</domain.username>
         <domain.password>password</domain.password>
 
+        <jacoco.version>0.7.4.201502262128</jacoco.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <!-- Sonar -->
-        <!-- The destination file for the code coverage report has to be set to the same value
-             in the parent pom and in each module pom. Then JaCoCo will add up information in
-             the same report, so that, it will give the cross-module code coverage. -->
-        <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <sonar.jacoco.itReportPath>${project.build.directory}/jacoco-it.exec</sonar.jacoco.itReportPath>
         <sonar.language>java</sonar.language>
     </properties>
 
@@ -65,9 +62,18 @@
             <plugins>
 
                 <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.2.201409121644</version>
+                    <version>${jacoco.version}</version>
                 </plugin>
 
                 <plugin>
@@ -96,9 +102,9 @@
                             <adminPort>1048</adminPort>
                             <httpPort>1080</httpPort>
                             <reuse>false</reuse>
-                            <!--<jvmOptions>-->
-                                <!--<option>-javaagent:${project.basedir}/jacoco/jacocoagent.jar=output=tcpserver,port=6300"</option>-->
-                            <!--</jvmOptions>-->
+                            <jvmOptions>
+                                <option>-javaagent:${project.basedir}/jacoco/jacocoagent.jar=destfile=${sonar.jacoco.itReportPath}</option>
+                            </jvmOptions>
                         </domain>
                         <components>
                             <component>
@@ -211,6 +217,15 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.glassfish.maven.plugin</groupId>
@@ -243,10 +258,6 @@
                                 <goals>
                                     <goal>prepare-agent-integration</goal>
                                 </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
-                                    <propertyName>failsafeArgLine</propertyName>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>jacoco-site</id>
@@ -255,6 +266,14 @@
                                     <goal>report</goal>
                                 </goals>
                             </execution>
+                            <execution>
+                                <id>jacoco-site2</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report-integration</goal>
+                                </goals>
+                            </execution>
+
                         </executions>
                     </plugin>
                 </plugins>
